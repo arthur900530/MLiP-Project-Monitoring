@@ -8,6 +8,8 @@ global:
   external_labels:
       monitor: 'node'
 
+rule_files:
+  - "alert_rules.yml"
 # A scrape configuration containing exactly one endpoint to scrape:
 # Here it's Prometheus itself.
 scrape_configs:

@@ -1,0 +1,20 @@
+groups:
+  - name: kafka-metrics-alerts
+    rules:
+      - alert: LowCTR
+        expr: click_through_rate < 0.002
+        for: 120m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low Click Through Rate"
+          description: "CTR is below 0.002 for over 120 minutes. Current value: {{ $value }}"
+
+      - alert: NoRequests
+        expr: sum(rate(request_count_total[5m])) == 0
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "No Incoming Requests"
+          description: "No requests have been received in the last 15 minutes. Possible service failure."
