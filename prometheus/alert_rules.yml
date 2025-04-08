@@ -11,10 +11,19 @@ groups:
           description: "CTR is below 0.002 for over 120 minutes. Current value: {{ $value }}"
 
       - alert: NoRequests
-        expr: sum(rate(request_count_total[5m])) == 0
+        expr: sum(rate(request_count_total[15m])) == 0
         for: 15m
         labels:
           severity: critical
         annotations:
           summary: "No Incoming Requests"
           description: "No requests have been received in the last 15 minutes. Possible service failure."
+
+      - alert: LowSuccessRequests
+        expr: sum(rate(request_count{http_status="200"}[15m])) < 1
+        for: 15m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Low Successful Requests"
+          description: "Fewer than 1 successful (HTTP 200) request per minute over the last 15 minutes. Current value: {{ $value }}"
