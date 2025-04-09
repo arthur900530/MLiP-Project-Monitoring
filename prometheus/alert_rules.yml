@@ -1,14 +1,32 @@
 groups:
   - name: kafka-metrics-alerts
     rules:
-      - alert: LowCTR
-        expr: click_through_rate < 0.002
+      - alert: TotalCTRTooLow
+        expr: click_through_rate_total < 0.002
         for: 120m
         labels:
           severity: warning
         annotations:
-          summary: "Low Click Through Rate"
-          description: "CTR is below 0.002 for over 120 minutes. Current value: {{ $value }}"
+          summary: "Total CTR Too Low"
+          description: "Total CTR is below 0.002 for over 2 hours. Current value: {{ $value }}"
+
+      - alert: Model1CTRLow
+        expr: click_through_rate_model{model="saved_model.keras"} < 0.002
+        for: 120m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Model 1 CTR Low"
+          description: "CTR for saved_model.keras is below 0.002 for over 2 hours. Current value: {{ $value }}"
+
+      - alert: Model2CTRLow
+        expr: click_through_rate_model{model="saved_model2.keras"} < 0.002
+        for: 120m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Model 2 CTR Low"
+          description: "CTR for saved_model2.keras is below 0.002 for over 2 hours. Current value: {{ $value }}"
 
       - alert: NoRequests
         expr: sum(rate(request_count_total[15m])) == 0
@@ -27,3 +45,12 @@ groups:
         annotations:
           summary: "Low Successful Requests"
           description: "Fewer than 1 successful (HTTP 200) request per minute over the last 15 minutes. Current value: {{ $value }}"
+
+      - alert: CTRDifferenceSignificant
+        expr: ctr_significance{model1="saved_model.keras", model2="saved_model2.keras"} == 1
+        for: 30m
+        labels:
+          severity: info
+        annotations:
+          summary: "CTR Difference Statistically Significant"
+          description: "CTR between saved_model.keras and saved_model2.keras is statistically significant (z-score > threshold) for 30 minutes."
